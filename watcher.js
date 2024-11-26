@@ -1,13 +1,13 @@
 require('dotenv').config();
 const Web3 = require('web3');
 const BigNumber = require('bignumber.js');
-const {performance} = require('perf_hooks');
+const { performance } = require('perf_hooks');
 
 const FlashswapApi = require('./abis/index').flashswapv2;
 const BlockSubscriber = require('./src/block_subscriber');
 const Prices = require('./src/prices');
 
-let FLASHSWAP_CONTRACT = process.env.CONTRACT;
+const FLASHSWAP_CONTRACT = process.env.CONTRACT;
 
 const TransactionSender = require('./src/transaction_send');
 
@@ -43,15 +43,15 @@ const init = async () => {
 
     const transactionSender = TransactionSender.factory(process.env.WSS_BLOCKS.split(','));
 
-    let nonce = await web3.eth.getTransactionCount(admin);
+    let nonce = await web3.eth.getTransactionCount(admin, 'pending');
     let gasPrice = await web3.eth.getGasPrice();
 
     setInterval(async () => {
-        nonce = await web3.eth.getTransactionCount(admin);
+        nonce = await web3.eth.getTransactionCount(admin, 'pending');
     }, 1000 * 19);
 
     setInterval(async () => {
-        gasPrice = await web3.eth.getGasPrice()
+        gasPrice = await web3.eth.getGasPrice();
     }, 1000 * 60 * 3);
 
     const owner = await flashswap.methods.owner().call();
@@ -70,18 +70,31 @@ const init = async () => {
     await handler();
     setInterval(handler, 1000 * 60 * 5);
 
-    const onBlock = async (block, web3, provider) => {
+    const onBlock = async (block, web3Instance, provider) => {
         const start = performance.now();
 
         const calls = [];
 
-        const flashswap = new web3.eth.Contract(FlashswapApi, FLASHSWAP_CONTRACT);
+        const flashswapInstance = new web3Instance.eth.Contract(FlashswapApi, FLASHSWAP_CONTRACT);
 
         pairs.forEach((pair) => {
             calls.push(async () => {
-                const check = await flashswap.methods.check(pair.tokenBorrow, new BigNumber(pair.amountTokenPay * 1e18), pair.tokenPay, pair.sourceRouter, pair.targetRouter).call();
+                // Convert amountTokenPay to correct decimals
+                const amountTokenPay = new BigNumber(pair.amountTokenPay).multipliedBy(new BigNumber(10).pow(pair.decimalsTokenBorrow));
 
-                const profit = check[0];
+                // Adjusted check function call with additional parameters
+                const check = await flashswapInstance.methods.check(
+                    pair.tokenBorrow,
+                    amountTokenPay.toFixed(),
+                    pair.tokenPay,
+                    pair.sourceRouter,
+                    pair.targetRouter,
+                    pair.stable,
+                    pair.isFlashOnSource
+                ).call();
+
+                const profit = new BigNumber(check[0]);
+                const amountOut = new BigNumber(check[1]);
 
                 let s = pair.tokenPay.toLowerCase();
                 const price = prices[s];
@@ -90,38 +103,47 @@ const init = async () => {
                     return;
                 }
 
-                const profitUsd = profit / 1e18 * price;
-                const percentage = (100 * (profit / 1e18)) / pair.amountTokenPay;
-                console.log(`[${block.number}] [${new Date().toLocaleString()}]: [${provider}] [${pair.name}] Arbitrage checked! Expected profit: ${(profit / 1e18).toFixed(3)} $${profitUsd.toFixed(2)} - ${percentage.toFixed(2)}%`);
+                // Adjust for token decimals
+                const profitTokenPayUnits = profit.dividedBy(new BigNumber(10).pow(pair.decimalsTokenPay));
+                const profitUsd = profitTokenPayUnits.multipliedBy(price);
+                const percentage = profitTokenPayUnits.dividedBy(pair.amountTokenPay).multipliedBy(100);
 
-                if (profit > 0) {
-                    console.log(`[${block.number}] [${new Date().toLocaleString()}]: [${provider}] [${pair.name}] Arbitrage opportunity found! Expected profit: ${(profit / 1e18).toFixed(3)} $${profitUsd.toFixed(2)} - ${percentage.toFixed(2)}%`);
+                console.log(`[${block.number}] [${new Date().toLocaleString()}]: [${provider}] [${pair.name}] Arbitrage checked! Expected profit: ${profitTokenPayUnits.toFixed(6)} $${profitUsd.toFixed(2)} - ${percentage.toFixed(2)}%`);
 
-                    const tx = flashswap.methods.start(
+                if (profit.isGreaterThan(0)) {
+                    console.log(`[${block.number}] [${new Date().toLocaleString()}]: [${provider}] [${pair.name}] Arbitrage opportunity found! Expected profit: ${profitTokenPayUnits.toFixed(6)} $${profitUsd.toFixed(2)} - ${percentage.toFixed(2)}%`);
+
+                    // Adjusted start function call with additional parameters
+                    const tx = flashswapInstance.methods.start(
                         block.number + 2,
                         pair.tokenBorrow,
-                        new BigNumber(pair.amountTokenPay * 1e18),
+                        amountTokenPay.toFixed(),
                         pair.tokenPay,
                         pair.sourceRouter,
                         pair.targetRouter,
                         pair.sourceFactory,
+                        pair.stable,
+                        pair.isFlashOnSource,
+                        pair.isVelodrome
                     );
 
-                    let estimateGas
+                    let estimateGas;
                     try {
-                        estimateGas = await tx.estimateGas({from: admin});
+                        estimateGas = await tx.estimateGas({ from: admin });
                     } catch (e) {
                         console.log(`[${block.number}] [${new Date().toLocaleString()}]: [${pair.name}]`, 'gasCost error', e.message);
                         return;
                     }
 
-                    const myGasPrice = new BigNumber(gasPrice).plus(gasPrice * 0.2212).toString();
-                    const txCostBNB = Web3.utils.toBN(estimateGas) * Web3.utils.toBN(myGasPrice);
+                    const myGasPrice = new BigNumber(gasPrice).plus(new BigNumber(gasPrice).multipliedBy(0.2212)).toFixed(0);
+                    const txCostWei = new BigNumber(estimateGas).multipliedBy(myGasPrice);
 
-                    let gasCostUsd = (txCostBNB / 1e18) * prices[BNB_MAINNET.toLowerCase()];
-                    const profitMinusFeeInUsd = profitUsd - gasCostUsd;
+                    // Convert gas cost to USD
+                    const gasCostEth = txCostWei.dividedBy(new BigNumber(10).pow(18));
+                    const gasCostUsd = gasCostEth.multipliedBy(prices[WETH_MAINNET.toLowerCase()]);
+                    const profitMinusFeeInUsd = profitUsd.minus(gasCostUsd);
 
-                    if (profitMinusFeeInUsd < 0.6) {
+                    if (profitMinusFeeInUsd.isLessThan(0.6)) {
                         console.log(`[${block.number}] [${new Date().toLocaleString()}] [${provider}]: [${pair.name}] stopped: `, JSON.stringify({
                             profit: "$" + profitMinusFeeInUsd.toFixed(2),
                             profitWithoutGasCost: "$" + profitUsd.toFixed(2),
@@ -129,13 +151,14 @@ const init = async () => {
                             duration: `${(performance.now() - start).toFixed(2)} ms`,
                             provider: provider,
                             myGasPrice: myGasPrice.toString(),
-                            txCostBNB: txCostBNB / 1e18,
+                            txCostETH: gasCostEth.toFixed(6),
                             estimateGas: estimateGas,
                         }));
+                        return;
                     }
 
-                    if (profitMinusFeeInUsd > 0.6) {
-                        console.log(`[${block.number}] [${new Date().toLocaleString()}] [${provider}]: [${pair.name}] and go: `, JSON.stringify({
+                    if (profitMinusFeeInUsd.isGreaterThan(0.6)) {
+                        console.log(`[${block.number}] [${new Date().toLocaleString()}] [${provider}]: [${pair.name}] proceeding with transaction: `, JSON.stringify({
                             profit: "$" + profitMinusFeeInUsd.toFixed(2),
                             profitWithoutGasCost: "$" + profitUsd.toFixed(2),
                             gasCost: "$" + gasCostUsd.toFixed(2),
@@ -146,10 +169,10 @@ const init = async () => {
                         const data = tx.encodeABI();
                         const txData = {
                             from: admin,
-                            to: flashswap.options.address,
+                            to: flashswapInstance.options.address,
                             data: data,
                             gas: estimateGas,
-                            gasPrice: new BigNumber(myGasPrice),
+                            gasPrice: myGasPrice,
                             nonce: nonce
                         };
 
@@ -159,7 +182,7 @@ const init = async () => {
                             return;
                         }
 
-                        console.log(`[${block.number}] [${new Date().toLocaleString()}] [${provider}]: sending transactions...`, JSON.stringify(txData))
+                        console.log(`[${block.number}] [${new Date().toLocaleString()}] [${provider}]: sending transaction...`, JSON.stringify(txData));
 
                         try {
                             await transactionSender.sendTransaction(txData);
@@ -168,18 +191,18 @@ const init = async () => {
                         }
                     }
                 }
-            })
-        })
+            });
+        });
 
         try {
             await Promise.all(calls.map(fn => fn()));
         } catch (e) {
-            console.log('error', e)
+            console.log('error', e);
         }
 
         let number = performance.now() - start;
         if (number > 1500) {
-            console.error('warning to slow', number);
+            console.error('warning too slow', number);
         }
 
         if (block.number % 40 === 0) {
@@ -188,6 +211,6 @@ const init = async () => {
     };
 
     BlockSubscriber.subscribe(process.env.WSS_BLOCKS.split(','), onBlock);
-}
+};
 
 init();
