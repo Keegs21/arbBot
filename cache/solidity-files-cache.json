@@ -1,0 +1,451 @@
+{
+  "_format": "hh-sol-cache-2",
+  "files": {
+    "/Users/keegangrabhorn/arbBot/uniswap-arbitrage-flash-swap/contracts/Flashswap.sol": {
+      "lastModificationDate": 1732726941895,
+      "contentHash": "5292f6ccaa84688604a4f0aa23eaeb36",
+      "sourceName": "contracts/Flashswap.sol",
+      "solcConfig": {
+        "version": "0.8.26",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./interfaces/IUniswapV2Router.sol",
+        "./interfaces/IUniswapV2Pair.sol",
+        "./interfaces/IUniswapV2Factory.sol",
+        "./interfaces/IVelodromeRouter.sol",
+        "./interfaces/IVelodromeV2Pair.sol",
+        "./interfaces/IVelodromeV2Factory.sol",
+        "./interfaces/IERC20.sol"
+      ],
+      "versionPragmas": [
+        ">=0.6.6 <0.9.0"
+      ],
+      "artifacts": [
+        "Flashswap"
+      ]
+    },
+    "/Users/keegangrabhorn/arbBot/uniswap-arbitrage-flash-swap/contracts/interfaces/IUniswapV2Router.sol": {
+      "lastModificationDate": 1732568600779,
+      "contentHash": "328d9b235ec0bf9207af2e7a87428176",
+      "sourceName": "contracts/interfaces/IUniswapV2Router.sol",
+      "solcConfig": {
+        "version": "0.8.26",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.6.2"
+      ],
+      "artifacts": [
+        "IUniswapV2Router"
+      ]
+    },
+    "/Users/keegangrabhorn/arbBot/uniswap-arbitrage-flash-swap/contracts/interfaces/IUniswapV2Factory.sol": {
+      "lastModificationDate": 1732568290116,
+      "contentHash": "4cedaa90c1a24a801a4cba93138a4830",
+      "sourceName": "contracts/interfaces/IUniswapV2Factory.sol",
+      "solcConfig": {
+        "version": "0.8.26",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.5.0"
+      ],
+      "artifacts": [
+        "IUniswapV2Factory"
+      ]
+    },
+    "/Users/keegangrabhorn/arbBot/uniswap-arbitrage-flash-swap/contracts/interfaces/IUniswapV2Pair.sol": {
+      "lastModificationDate": 1732568322706,
+      "contentHash": "680d25c3fb174bafb7577999b248c7c5",
+      "sourceName": "contracts/interfaces/IUniswapV2Pair.sol",
+      "solcConfig": {
+        "version": "0.8.26",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.5.0"
+      ],
+      "artifacts": [
+        "IUniswapV2Pair"
+      ]
+    },
+    "/Users/keegangrabhorn/arbBot/uniswap-arbitrage-flash-swap/contracts/interfaces/IVelodromeRouter.sol": {
+      "lastModificationDate": 1732563389236,
+      "contentHash": "fae4bcfc5bf9aeac902a697321bd164e",
+      "sourceName": "contracts/interfaces/IVelodromeRouter.sol",
+      "solcConfig": {
+        "version": "0.8.26",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.6.2"
+      ],
+      "artifacts": [
+        "IVelodromeRouter"
+      ]
+    },
+    "/Users/keegangrabhorn/arbBot/uniswap-arbitrage-flash-swap/contracts/interfaces/IVelodromeV2Pair.sol": {
+      "lastModificationDate": 1732564418245,
+      "contentHash": "f0f4f5add03372052291f3c1c7f8ed6a",
+      "sourceName": "contracts/interfaces/IVelodromeV2Pair.sol",
+      "solcConfig": {
+        "version": "0.8.26",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.5.0"
+      ],
+      "artifacts": [
+        "IVelodromeV2Pair"
+      ]
+    },
+    "/Users/keegangrabhorn/arbBot/uniswap-arbitrage-flash-swap/contracts/interfaces/IVelodromeV2Factory.sol": {
+      "lastModificationDate": 1732564011369,
+      "contentHash": "9f5c55ab1256fdee1e1f078371d8bbf6",
+      "sourceName": "contracts/interfaces/IVelodromeV2Factory.sol",
+      "solcConfig": {
+        "version": "0.8.26",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.5.0"
+      ],
+      "artifacts": [
+        "IVelodromeV2Factory"
+      ]
+    },
+    "/Users/keegangrabhorn/arbBot/uniswap-arbitrage-flash-swap/contracts/interfaces/IERC20.sol": {
+      "lastModificationDate": 1732640297605,
+      "contentHash": "64b04d5247e03a8041d489620042b73f",
+      "sourceName": "contracts/interfaces/IERC20.sol",
+      "solcConfig": {
+        "version": "0.8.26",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.6.2 <0.9.0"
+      ],
+      "artifacts": [
+        "IERC20",
+        "IWETH"
+      ]
+    },
+    "/Users/keegangrabhorn/arbBot/uniswap-arbitrage-flash-swap/contracts/interfaces/IUniswapV3Pool.sol": {
+      "lastModificationDate": 1732640498897,
+      "contentHash": "cd0fda238561d8dee2bfdff288c0e7a7",
+      "sourceName": "contracts/interfaces/IUniswapV3Pool.sol",
+      "solcConfig": {
+        "version": "0.8.26",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.6.2 <0.9.0"
+      ],
+      "artifacts": [
+        "IUniswapV3Pool"
+      ]
+    },
+    "/Users/keegangrabhorn/arbBot/uniswap-arbitrage-flash-swap/contracts/interfaces/IUniswapV3Router02.sol": {
+      "lastModificationDate": 1732640433998,
+      "contentHash": "30de50867d553d198e167fc8e3cacca2",
+      "sourceName": "contracts/interfaces/IUniswapV3Router02.sol",
+      "solcConfig": {
+        "version": "0.8.26",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.6.2 <0.9.0"
+      ],
+      "artifacts": [
+        "ISwapRouter02"
+      ]
+    },
+    "/Users/keegangrabhorn/arbBot/uniswap-arbitrage-flash-swap/contracts/interfaces/IQuoterV2.sol": {
+      "lastModificationDate": 1732729644698,
+      "contentHash": "b3232e6dd66fc29b8aaa5efac4d0c1ff",
+      "sourceName": "contracts/interfaces/IQuoterV2.sol",
+      "solcConfig": {
+        "version": "0.8.26",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.26"
+      ],
+      "artifacts": [
+        "IQuoterV2"
+      ]
+    },
+    "/Users/keegangrabhorn/arbBot/uniswap-arbitrage-flash-swap/contracts/Keeganswap.sol": {
+      "lastModificationDate": 1733161913452,
+      "contentHash": "cbdef62912ce7305410ad87856067371",
+      "sourceName": "contracts/Keeganswap.sol",
+      "solcConfig": {
+        "version": "0.8.26",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./interfaces/IERC20.sol",
+        "./interfaces/IUniswapV3Pool.sol",
+        "./interfaces/IUniswapV3Router02.sol",
+        "./interfaces/IQuoterV2.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.26"
+      ],
+      "artifacts": [
+        "KeeganSwap"
+      ]
+    }
+  }
+}

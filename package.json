@@ -1,23 +1,38 @@
 {
   "name": "uniswap-arbitrage-flash-swap",
   "version": "1.0.0",
-  "description": "",
-  "main": "truffle-config.js",
+  "description": "You want to play with \"millions\" on the blockchain then try https://uniswap.org/docs/v2/smart-contract-integration/using-flash-swaps/. This contract is able to arbitrage between DEX on the blockchain without providing any own capital. Basically is usable on the **Binance Smart Chain** and provides callbacks for common DEX, feel free to extend.",
+  "main": "hardhat.config.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy": "hardhat run scripts/deploy.js --network localhost",
+    "deploy:testnet": "hardhat run scripts/deploy.js --network goerli"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@truffle/hdwallet-provider": "^1.4.0",
     "async-request": "^1.2.0",
-    "bignumber.js": "^9.0.1",
-    "dotenv": "^8.2.0",
+    "bignumber.js": "^9.1.2",
+    "dotenv": "^8.6.0",
     "eth-multicall": "^1.3.13",
-    "web3": "^1.3.6"
+    "web3": "^1.10.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Keegs21/arbBot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Keegs21/arbBot/issues"
+  },
+  "homepage": "https://github.com/Keegs21/arbBot#readme",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@nomicfoundation/hardhat-verify": "^2.0.12",
+    "hardhat": "^2.22.16"
   }
 }
